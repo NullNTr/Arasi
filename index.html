@@ -11,11 +11,14 @@ body {
   color: white;
   padding: 20px;
 }
+
 textarea {
   width: 100%;
   height: 200px;
   font-size: 16px;
+  margin-bottom: 10px;
 }
+
 button {
   width: 100%;
   padding: 15px;
@@ -26,35 +29,82 @@ button {
   border: none;
   border-radius: 8px;
 }
+
+button.embed-on {
+  background: #16a34a;
+}
+
+.embed-box {
+  margin-top: 10px;
+  display: none;
+}
 </style>
 </head>
 <body>
 
 <h2>広報送信</h2>
 
-<textarea id="msg">
-メッセージ
-</textarea>
+<textarea id="msg">メッセージ</textarea>
+
+<!-- Embed切り替え -->
+<button id="embedBtn" onclick="toggleEmbed()">Embed：OFF</button>
+
+<!-- Embed設定 -->
+<div class="embed-box" id="embedBox">
+  <label>Embedカラー：</label>
+  <input type="color" id="embedColor" value="#5865F2">
+</div>
 
 <button onclick="send()">送信</button>
 
 <script>
 const WEBHOOK_URL = "https://discord.com/api/webhooks/1457939078598099152/f9uQsJCSmOEmPgQvMR6B4cq-nTZhaiyI4zG6vwp7LVGbmbbzgrNjyhEdEYv4p9VgWevM";
 
+let embedMode = false;
+
+function toggleEmbed() {
+  embedMode = !embedMode;
+  const btn = document.getElementById("embedBtn");
+  const box = document.getElementById("embedBox");
+
+  if (embedMode) {
+    btn.textContent = "Embed：ON";
+    btn.classList.add("embed-on");
+    box.style.display = "block";
+  } else {
+    btn.textContent = "Embed：OFF";
+    btn.classList.remove("embed-on");
+    box.style.display = "none";
+  }
+}
+
 function send() {
   const text = document.getElementById("msg").value;
+  const colorHex = document.getElementById("embedColor").value;
+  const colorDec = parseInt(colorHex.replace("#", ""), 16);
+
+  let payload;
+
+  if (embedMode) {
+    payload = {
+      embeds: [{
+        description: text,
+        color: colorDec
+      }]
+    };
+  } else {
+    payload = {
+      content: text
+    };
+  }
 
   fetch(WEBHOOK_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      content: text
-    })
-  }).then(() => {
-    alert("送信完了");
-  }).catch(() => {
-    alert("送信失敗");
-  });
+    body: JSON.stringify(payload)
+  })
+  .then(() => alert("送信完了"))
+  .catch(() => alert("送信失敗"));
 }
 </script>
 
