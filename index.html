@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>広報送信</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  font-family: sans-serif;
+  background: #0f172a;
+  color: white;
+  padding: 20px;
+}
+textarea {
+  width: 100%;
+  height: 200px;
+  font-size: 16px;
+}
+button {
+  width: 100%;
+  padding: 15px;
+  font-size: 18px;
+  margin-top: 10px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+</style>
+</head>
+<body>
+
+<h2>広報送信</h2>
+
+<textarea id="msg">
+メッセージ
+</textarea>
+
+<button onclick="send()">送信</button>
+
+<script>
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1457939078598099152/f9uQsJCSmOEmPgQvMR6B4cq-nTZhaiyI4zG6vwp7LVGbmbbzgrNjyhEdEYv4p9VgWevM";
+
+function send() {
+  const text = document.getElementById("msg").value;
+
+  fetch(WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      content: text
+    })
+  }).then(() => {
+    alert("送信完了");
+  }).catch(() => {
+    alert("送信失敗");
+  });
+}
+</script>
+
+</body>
+</html>
