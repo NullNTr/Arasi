@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ARASI CONTROL PANEL</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* ===== 全体 ===== */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: radial-gradient(circle at top, #3b0764, #0f172a 60%);
+  color: #f5f3ff;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ===== コンテナ ===== */
+.container {
+  width: 100%;
+  max-width: 520px;
+  padding: 30px;
+  background: linear-gradient(145deg, rgba(88,28,135,0.35), rgba(15,23,42,0.8));
+  border-radius: 20px;
+  border: 1px solid rgba(168,85,247,0.4);
+  box-shadow: 0 0 40px rgba(168,85,247,0.25);
+  backdrop-filter: blur(12px);
+}
+
+/* ===== タイトル ===== */
+h1 {
+  text-align: center;
+  margin-bottom: 5px;
+  font-size: 28px;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #c084fc, #8b5cf6, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 13px;
+  color: #c4b5fd;
+  margin-bottom: 25px;
+}
+
+/* ===== 入力欄 ===== */
+textarea {
+  width: 100%;
+  height: 180px;
+  resize: none;
+  padding: 15px;
+  border-radius: 14px;
+  font-size: 15px;
+  color: #f5f3ff;
+  background: linear-gradient(145deg, #1e1b4b, #0f172a);
+  border: 1px solid rgba(168,85,247,0.5);
+  outline: none;
+  box-shadow: inset 0 0 12px rgba(168,85,247,0.25);
+}
+
+textarea:focus {
+  border-color: #c084fc;
+  box-shadow: 0 0 15px rgba(192,132,252,0.6);
+}
+
+/* ===== ボタン共通 ===== */
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 14px;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  color: white;
+  background: linear-gradient(135deg, #7c3aed, #9333ea, #4f46e5);
+  box-shadow: 0 0 18px rgba(168,85,247,0.45);
+  transition: all 0.25s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 28px rgba(192,132,252,0.8);
+}
+
+/* ===== Embed ON ===== */
+.embed-on {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  box-shadow: 0 0 20px rgba(34,197,94,0.6);
+}
+
+/* ===== Embed設定 ===== */
+.embed-box {
+  display: none;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.embed-box label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #ddd6fe;
+}
+
+input[type="color"] {
+  width: 60px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>ARASI PANEL</h1>
+  <div class="subtitle">Discord Broadcast System</div>
+
+  <textarea id="msg" placeholder="ここに送信するメッセージを入力…"></textarea>
+
+  <button id="embedBtn" onclick="toggleEmbed()">EMBED : OFF</button>
+
+  <div class="embed-box" id="embedBox">
+    <label>Embed Color</label>
+    <input type="color" id="embedColor" value="#8b5cf6">
+  </div>
+
+  <button onclick="send()">SEND MESSAGE</button>
+</div>
+
+<script>
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1457939078598099152/f9uQsJCSmOEmPgQvMR6B4cq-nTZhaiyI4zG6vwp7LVGbmbbzgrNjyhEdEYv4p9VgWevM";
+
+let embedMode = false;
+
+function toggleEmbed() {
+  embedMode = !embedMode;
+  const btn = document.getElementById("embedBtn");
+  const box = document.getElementById("embedBox");
+
+  if (embedMode) {
+    btn.textContent = "EMBED : ON";
+    btn.classList.add("embed-on");
+    box.style.display = "block";
+  } else {
+    btn.textContent = "EMBED : OFF";
+    btn.classList.remove("embed-on");
+    box.style.display = "none";
+  }
+}
+
+function send() {
+  const text = document.getElementById("msg").value;
+  const colorHex = document.getElementById("embedColor").value;
+  const colorDec = parseInt(colorHex.replace("#", ""), 16);
+
+  const payload = embedMode
+    ? { embeds: [{ description: text, color: colorDec }] }
+    : { content: text };
+
+  fetch(WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(() => alert("送信完了"))
+  .catch(() => alert("送信失敗"));
+}
+</script>
+
+</body>
+</html>
